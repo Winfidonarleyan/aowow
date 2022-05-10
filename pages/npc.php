@@ -120,7 +120,7 @@ class NpcPage extends GenericPage
         $infobox = Lang::getInfoBoxForFlags($this->subject->getField('cuFlags'));
 
         // Event (ignore events, where the object only gets removed)
-        if ($_ = DB::World()->selectCol('SELECT DISTINCT ge.eventEntry FROM game_event ge, game_event_creature gec, creature c WHERE ge.eventEntry = gec.eventEntry AND c.guid = gec.guid AND c.id = ?d', $this->typeId))
+        if ($_ = DB::World()->selectCol('SELECT DISTINCT ge.eventEntry FROM game_event ge, game_event_creature gec, creature c WHERE ge.eventEntry = gec.eventEntry AND c.guid = gec.guid AND c.id1 = ?d', $this->typeId))
         {
             $this->extendGlobalIds(Type::WORLDEVENT, ...$_);
             $ev = [];
@@ -372,7 +372,7 @@ class NpcPage extends GenericPage
             if (!$sai->prepare())                           // no smartAI found .. check per guid
             {
                 // at least one of many
-                $guids = DB::World()->selectCol('SELECT guid FROM creature WHERE id = ?d', $this->typeId);
+                $guids = DB::World()->selectCol('SELECT guid FROM creature WHERE id1 = ?d', $this->typeId);
                 while ($_ = array_pop($guids))
                 {
                     $sai = new SmartAI(SAI_SRC_TYPE_CREATURE, -$_, ['baseEntry' => $this->typeId, 'name' => $this->subject->getField('name', true), 'title' => ' [small](for GUID: '.$_.')[/small]']);
@@ -616,7 +616,7 @@ class NpcPage extends GenericPage
         }
 
         // tab: sells
-        if ($sells = DB::World()->selectCol('SELECT item FROM npc_vendor nv WHERE entry = ?d UNION SELECT item FROM game_event_npc_vendor genv JOIN creature c ON genv.guid = c.guid WHERE c.id = ?d', $this->typeId, $this->typeId))
+        if ($sells = DB::World()->selectCol('SELECT item FROM npc_vendor nv WHERE entry = ?d UNION SELECT item FROM game_event_npc_vendor genv JOIN creature c ON genv.guid = c.guid WHERE c.id1 = ?d', $this->typeId, $this->typeId))
         {
             $soldItems = new ItemList(array(['id', $sells]));
             if (!$soldItems->error)
